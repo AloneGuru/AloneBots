@@ -1,0 +1,35 @@
+name: AloneBots
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore: 'README.md'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Setting Up Git Configuration
+        run: |
+          git config --global user.email ${{ secrets.GH_EMAIL }}
+          git config --global user.name ${{ secrets.GH_USERNAME }}
+          git config --global credential.helper store
+          echo "https://${{ secrets.GH_USERNAME }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+      - name: Setting D Creds
+        run: docker login --username=${{ secrets.D_NAME }} --password=${{ secrets.D_CRED }}
+      - name: Running AloneBots
+        timeout-minutes: 2
+        continue-on-error: true
+        run: docker run ${{ secrets.D_REPO }}
+      - name: Loop Workflow
+        continue-on-error: true
+        run: |
+          # ${GITHUB_REPOSITORY} is the repo slug which runs this script
+          git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} loop
+          cd loop || exit 1
+          echo $(( RANDOM - ( RANDOM % RANDOM ) )) > looper.txt
+          git add looper.txt
+          git commit -m "Workflow : Loop at $(date -u +%D-%T%P)"
+          git push -q https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} HEAD:main
