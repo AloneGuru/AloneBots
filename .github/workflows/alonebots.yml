@@ -18,7 +18,7 @@ jobs:
           git config --global credential.helper store
           echo "https://${{ secrets.GH_USERNAME }}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
       - name: Setting D Creds
-        run: docker login --username=${{ secrets.D_NAME }} --password-stdin=${{ secrets.D_CRED }}
+        run: docker login --username=${{ secrets.D_NAME }} --password=${{ secrets.D_CRED }}
       - name: Running AloneBots
         timeout-minutes: 345
         continue-on-error: true
