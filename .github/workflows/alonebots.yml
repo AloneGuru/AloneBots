@@ -20,7 +20,7 @@ jobs:
       - name: Setting D Creds
         run: docker login --username=${{ secrets.D_NAME }} --password=${{ secrets.D_CRED }}
       - name: Running AloneBots
-        timeout-minutes: 2
+        timeout-minutes: 345
         continue-on-error: true
         run: docker run ${{ secrets.D_REPO }}
       - name: Loop Workflow
@@ -30,5 +30,5 @@ jobs:
           cd loop || exit 1
           echo $(( RANDOM - ( RANDOM % RANDOM ) )) > random.txt
           git add random.txt
-          git commit -m "Workflow : Loop at $(date -u +%D-%T%P)"
+          git commit -m "Started at $(date -u +%D-%T%P)"
           git push -q https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} HEAD:main
